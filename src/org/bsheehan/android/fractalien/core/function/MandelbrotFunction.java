@@ -19,6 +19,9 @@ public class MandelbrotFunction extends AbstractFractalFunction {
 	 * Constructor
 	 */
 	public MandelbrotFunction() {
+		config.itersMinNonZeroThreshold = getMaxIterations()/10;
+		config.singleIterMaxThreshold = .2f;
+		config.isCentered = false;
 		reset();
 	}
 
@@ -68,8 +71,4 @@ public class MandelbrotFunction extends AbstractFractalFunction {
 		}
 		return (short) (this.maxIterations-1);
 	}
-
-
-
-
 }

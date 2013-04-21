@@ -24,6 +24,8 @@ public interface IIteratedFunction {
 	 * @return
 	 */
 	RectF getFractalRegion();
+	
+	FractalConfig getFractalConfig();
 
 	/**
 	 * reset to original boundary that defines the fractal region in the complex plane.
@@ -36,6 +38,7 @@ public interface IIteratedFunction {
 	 * @param c
 	 */
 	void setInitialConditions(Complex z0, Complex c);
+	void setInitialConditions(IIteratedFunction func);
 
 	/**
 	 * Adjust the center point of the region of interest for this iterated system.
@@ -65,5 +68,7 @@ public interface IIteratedFunction {
 	short iterate(Complex z);
 
 	void setScale(float screenAspectRatio);
+
+	void setFractalRegion(RectF coolRegion);
 
 }

@@ -5,6 +5,7 @@ import org.bsheehan.android.fractalien.core.utils.Complex;
 
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.util.Log;
 
 /**
  * @author bsheehan@baymoon.com
@@ -25,6 +26,8 @@ public abstract class AbstractFractalFunction implements IIteratedFunction {
 	 * parameter and directly maps to the runtime memory footprint of the application. Larger values
 	 * allow for finer grain detail iteration orbits before they are considered escaped.   **/
 	protected short maxIterations = 1024;
+	
+	protected FractalConfig config = new FractalConfig();
 
 	/** the rectangular region that the iterative method is defined over **/
 	protected float top, bottom, left, right;
@@ -33,10 +36,10 @@ public abstract class AbstractFractalFunction implements IIteratedFunction {
 	protected RectF fractalRegion;
 
 	/** The complex quadratic constant used during iteration **/
-	protected Complex c = new Complex(0, 0);
+	public Complex c = new Complex(0, 0);
 
 	/** The complex starting origin used during iteration **/
-	protected Complex z0 = new Complex(0, 0);
+	public Complex z0 = new Complex(0, 0);
 
 	public short getMaxIterations() {
 		return this.maxIterations;
@@ -45,6 +48,13 @@ public abstract class AbstractFractalFunction implements IIteratedFunction {
 	public RectF getFractalRegion() {
 		return this.fractalRegion;
 	}
+	
+	public void setFractalRegion(RectF region) {
+		this.fractalRegion.set(region);
+		
+		Log.i("bob", "fractal region set " + this.fractalRegion.toString());
+
+	}
 
 	/**
 	 * For each iteration for the function set the initial values on the complex plane.
@@ -52,6 +62,13 @@ public abstract class AbstractFractalFunction implements IIteratedFunction {
 	public void setInitialConditions(Complex z0, Complex c) {
 		this.z0 = z0;
 		this.c = c;
+	}
+
+	
+	public void setInitialConditions(IIteratedFunction func) {
+		this.z0.setValues(((AbstractFractalFunction)(func)).z0.r, ((AbstractFractalFunction)(func)).z0.i);
+		this.c.setValues(((AbstractFractalFunction)(func)).c.r, ((AbstractFractalFunction)(func)).c.i);
+		Log.i("bob", "setInitialConditions " + this.z0.toString() + " " + this.c.toString());
 	}
 
 	/** 
@@ -118,6 +135,11 @@ public abstract class AbstractFractalFunction implements IIteratedFunction {
 		
 		this.fractalRegion.left *= screenAspectRatio;
 		this.fractalRegion.right *= screenAspectRatio;
+	}
+	
+	@Override
+	public FractalConfig getFractalConfig() {
+		return this.config;
 	}
 
 }

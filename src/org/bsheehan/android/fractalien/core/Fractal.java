@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import org.bsheehan.android.fractalien.core.function.IIteratedFunction;
 import org.bsheehan.android.fractalien.core.utils.Complex;
 
+import android.graphics.Color;
 import android.graphics.RectF;
 
 /**
@@ -42,7 +43,7 @@ public class Fractal implements IFractal {
 	// width and height of fractal in screen space
 	private int screenWidth, screenHeight;
 
-	// RGBA pixel format size
+	// ARGB pixel format size
 	final private int kNumColorSpaceComponents = 4;
 	
 	private float screenAspectRatio = 1.0f;
@@ -56,13 +57,6 @@ public class Fractal implements IFractal {
 		final short maxIterations = this.fractalIterationFunction.getMaxIterations();
 		this.iterationHistogram = new int[maxIterations];
 		this.rgbColorSet = new ColorSet(maxIterations);
-		this.rgbBuffer = ByteBuffer.allocate(512 * 512 * this.kNumColorSpaceComponents);
-		this.iterationBuffer = new short[512][];
-		for (int i = 0; i < 512; ++i){
-			this.iterationBuffer[i] = new short[512];
-		}
-
-
 	}
 
 	/** 
@@ -71,12 +65,12 @@ public class Fractal implements IFractal {
 	public void setDims(int width, int height) {
 		this.screenWidth = width;
 		this.screenHeight = height;
-		//this.rgbBuffer = ByteBuffer.allocate(width * height * this.kNumColorSpaceComponents);
+		this.rgbBuffer = ByteBuffer.allocate(width * height * this.kNumColorSpaceComponents);
 
-//		this.iterationBuffer = new short[width][];
-//		for (int i = 0; i < width; ++i){
-//			this.iterationBuffer[i] = new short[height];
-//		}
+		this.iterationBuffer = new short[width][];
+		for (int i = 0; i < width; ++i){
+			this.iterationBuffer[i] = new short[height];
+		}
 	}	
 
 	/**
@@ -88,12 +82,12 @@ public class Fractal implements IFractal {
 		for (int i = 0 ; i < this.screenWidth; i++){
 			for (int j = 0; j < this.screenHeight; j++) {
 				final int index = this.iterationBuffer[i][j];
+				// TODO eventually may use this component value for alpha blending effects
 				this.rgbBuffer.put(this.rgbColorSet.getRed(index));
 				this.rgbBuffer.put(this.rgbColorSet.getGreen(index));
 				this.rgbBuffer.put(this.rgbColorSet.getBlue(index));
+				this.rgbBuffer.put((byte) 255);
 
-				// TODO eventually may use this component value for alpha blending effects
-				this.rgbBuffer.put((byte) 256);
 			}
 		}
 	}
@@ -186,12 +180,12 @@ public class Fractal implements IFractal {
 					rowMax = iters;
 				}
 			}
-			if (rowMax-rowMin > 0 && rowMax-rowMin < tolerance)
-				return false;
+			//if (rowMax-rowMin > 0 && rowMax-rowMin < 2)
+			//	return false;
 		}
 		
-		if (max-min < tolerance)
-			return false;
+		//if (max-min < 2)
+		//+	return false;
 
 /*		// Test corners
 		// pixel 1
@@ -249,8 +243,8 @@ public class Fractal implements IFractal {
 	public boolean isCoolEnough() {
 		final int totalPixels = this.rgbBuffer.capacity() / this.kNumColorSpaceComponents ;
 
-		// if any one iteration count is more than 50% of fractal, bail.
-		final int threshold = totalPixels/2;
+		// if any one iteration count is more than configured percent of fractal, bail.
+		final int threshold = (int)(totalPixels * this.fractalIterationFunction.getFractalConfig().singleIterMaxThreshold);
 		int nonZeroCnt = 0;
 		for (int i = 0; i < this.fractalIterationFunction.getMaxIterations(); ++i) {
 			if (this.iterationHistogram[i] >= threshold) {
@@ -261,8 +255,8 @@ public class Fractal implements IFractal {
 		}
 
 		// if number of non zero is too small then bail
-		final int nonZeroCntMin = this.fractalIterationFunction.getMaxIterations()/10;
-		if (nonZeroCnt < nonZeroCntMin)
+		final int itersMinNonZeroThreshold = this.fractalIterationFunction.getFractalConfig().itersMinNonZeroThreshold;
+		if (nonZeroCnt < itersMinNonZeroThreshold)
 			return false;
 
 		return true;
@@ -302,5 +296,21 @@ public class Fractal implements IFractal {
 	@Override
 	public void setScale(float scale) {
 		screenAspectRatio = scale;
+	}
+
+	@Override
+	public void assignColor(int color) {
+		this.rgbBuffer.rewind();
+		for (int i = 0 ; i < this.screenWidth; i++){
+			for (int j = 0; j < this.screenHeight; j++) {
+				//final int index = this.iterationBuffer[i][j];
+				// TODO eventually may use this component value for alpha blending effects
+				this.rgbBuffer.put((byte)Color.red(color));
+				this.rgbBuffer.put((byte)Color.green(color));
+				this.rgbBuffer.put((byte)Color.blue(color));
+				this.rgbBuffer.put((byte) 255);
+
+			}	
+		}
 	}
 }

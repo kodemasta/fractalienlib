@@ -4,6 +4,8 @@ import java.nio.Buffer;
 
 import org.bsheehan.android.fractalien.core.function.IIteratedFunction;
 
+import android.graphics.Color;
+
 
 /**
  * @author bsheehan@baymoon.com
@@ -54,4 +56,6 @@ public interface IFractal {
 	public IIteratedFunction getFractalFunction();
 
 	public void setScale(float f);
+
+	public void assignColor(int blue);
 }

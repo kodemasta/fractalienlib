@@ -100,6 +100,50 @@ public class ESTransform
 			matrixMultiply( rotMat, this.mMatrix );
 		}
 	}
+	
+	final float PI_180 = (float) (Math.PI / 180.0); 
+	public void rotateY(float angle)
+	{
+		float sinAngle, cosAngle;
+		sinAngle = android.util.FloatMath.sin(angle * PI_180);
+		cosAngle = android.util.FloatMath.cos(angle * PI_180);
+		//if ( mag > 0.0f )
+		{
+			float yy, xs, ys, zs;
+			float oneMinusCos;
+			final float[] rotMat = new float[16];
+
+
+			yy = 1.0f;
+			xs = 0.0f;;
+			ys = sinAngle;
+			zs = 0.0f;
+			oneMinusCos = 1.0f - cosAngle;
+
+			rotMat[0 * 4 + 0] = cosAngle;
+			rotMat[0 * 4 + 1] = -zs;
+			rotMat[0 * 4 + 2] =  ys;
+			rotMat[0 * 4 + 3] = 0.0F; 
+
+			rotMat[1 * 4 + 0] = zs;
+			rotMat[1 * 4 + 1] = (oneMinusCos * yy) + cosAngle;
+			rotMat[1 * 4 + 2] = -xs;
+			rotMat[1 * 4 + 3] = 0.0F;
+
+			rotMat[2 * 4 + 0] = -ys;
+			rotMat[2 * 4 + 1] =  xs;
+			rotMat[2 * 4 + 2] = cosAngle;
+			rotMat[2 * 4 + 3] = 0.0F; 
+
+			rotMat[3 * 4 + 0] = 0.0F;
+			rotMat[3 * 4 + 1] = 0.0F;
+			rotMat[3 * 4 + 2] = 0.0F;
+			rotMat[3 * 4 + 3] = 1.0F;
+
+			matrixMultiply( rotMat, this.mMatrix );
+		}
+	}
+
 
 	public void frustum( float left, float right, float bottom, float top, float nearZ, float farZ)
 	{

@@ -94,10 +94,11 @@ public class ESShapes {
 
 		final float[] cubeVerts = {
 				// SIDE 4
-				-0.5f, -0.5f, 0.5f, 
-				-0.5f, 0.5f, 0.5f, 
-				0.5f, 0.5f, 0.5f, 
-				0.5f, -0.5f, 0.5f,};
+				-0.5f, -0.5f, -1.0f, 
+				-0.5f, 0.5f, -1.0f,
+				0.5f, 0.5f, -1.0f, 
+				0.5f, -0.5f, -1.0f 
+		};
 
 		final float[] cubeNormals = {
 				// SIDE 4

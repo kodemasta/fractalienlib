@@ -1,8 +1,13 @@
 package org.bsheehan.android.fractalien.core;
 
+import java.nio.ByteBuffer;
+
 import org.bsheehan.android.fractalien.core.function.IteratedFunctionFactory;
 import org.bsheehan.android.fractalien.core.function.IteratedFunctionFactory.FractalType;
 
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
+import android.graphics.Color;
 import android.util.Log;
 
 /**
@@ -35,26 +40,21 @@ public class FractalFactory {
 	 * @param fractal - input fractal to zoom in on
 	 * @return
 	 */
-	static public void makeItCool(IFractal fractal, boolean centered) {
-		final int w = 32;
-		final int h = 32;
-		fractal.setDims(w, h);
-		fractal.generate();
+	static public void makeItCool(IFractal fractal, boolean centered, int w, int h) {
 		do {
 			do {
 				fractal.getFractalFunction().setRandomRegion(centered);
+				try {
+					Thread.sleep(100);
+				} catch (final InterruptedException e) {
+					// if we interrupt the sleeping thread an
+					// exception will get us here.
+					return;
+				}
 			} while (!fractal.isInterestingAtAll(w, h));
 			fractal.generate();
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		} while (!fractal.isCoolEnough());
 
-		// now that we have a cool region, lets assign a cool colormap
-		fractal.setRandomColorSet();
 	}
 
 	/**
@@ -64,13 +64,36 @@ public class FractalFactory {
 	 * @param fractal to generate
 	 * @param dim - desired screen size.
 	 */
-	static public void generateFullFractal(IFractal fractal, int dim) {
+	static public void generateFullFractal(IFractal fractal) {
 
 		// update the resolution and generate
-		fractal.setDims(dim, dim);
+		//fractal.setDims(dim, dim);
 		fractal.generate();
+		// now that we have a cool region, lets assign a cool colormap
+		fractal.setRandomColorSet();
 		fractal.assignColors();
 
 		Log.i("bob", "fractal generated");
+	}
+	
+	static public void generateSolidBitmap(IFractal fractal, int dim, Color c) {
+
+		// update the resolution and generate
+		fractal.setDims(dim, dim);
+		fractal.assignColors();
+
+		Log.i("bob", "fractal bitmap generated");
+	}
+	
+	static public Bitmap convertToBitmap(IFractal fractal){
+		ByteBuffer buffer = (ByteBuffer)fractal.getBufferColors();
+		buffer.rewind();
+		//byte[] bytes = new byte[fractal.getWidth() * fractal.getHeight() * 4];
+		//buffer.get(bytes);
+		//Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, fractal.getWidth() * fractal.getHeight() * 4);
+		Bitmap bitmap = Bitmap.createBitmap(fractal.getWidth(), fractal.getHeight(), Config.ARGB_8888);
+		bitmap.copyPixelsFromBuffer(buffer);
+		
+		return bitmap;
 	}
 }

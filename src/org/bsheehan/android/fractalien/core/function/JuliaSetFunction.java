@@ -17,7 +17,12 @@ public class JuliaSetFunction extends AbstractFractalFunction {
 	/**
 	 * Constructor
 	 */
-	public JuliaSetFunction() {		
+	public JuliaSetFunction() {	
+		
+		config.itersMinNonZeroThreshold = getMaxIterations()/10;
+		config.singleIterMaxThreshold = .5f;
+		config.isCentered = true;
+
 		reset();
 	}
 
